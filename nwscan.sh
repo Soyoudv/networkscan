@@ -3,10 +3,16 @@ set -e
 
 base="192.168."
 
+myIp=$(hostname -I | awk '{print $1}')
+
 ping_ip(){
     # echo "pinging $ip"
+    macOfThisIp=$(arp -n $ip | awk '/..:..:..:..:..:../ {print $3}')
+    if [ "$ip" == "$myIp" ]; then
+        macOfThisIp="you"
+    fi
     if ping -c 2 -W 0.6 $ip >/dev/null 2>&1; then
-        echo "$ip reached"
+        echo "$ip : $macOfThisIp"
     fi
 }
 
