@@ -39,8 +39,25 @@ scan_network(){
     done
 
     wait
-    cat "$STATE_FILE"
 
+    # convert CACHE file to associative arrays
+    while read -r line; do
+        ip=$(echo $line | cut -d' ' -f1)
+        mac=$(echo $line | cut -d' ' -f2)
+        ip_mac_map[$ip]=$mac
+    done < "$STATE_FILE"
+
+    # affichage:
+    for ip in "${!ip_mac_map[@]}"; do
+        mac=${ip_mac_map[$ip]}
+        if [ "$mac" = 1 ]; then
+            echo "$ip : your device"
+        else if [ "$mac" = 0 ]; then
+            echo "$ip : no MAC found"
+        else
+            echo "$ip : $mac (${ip_vendor_map[$ip]})"
+        fi fi
+    done
 }
 
 scan_network
