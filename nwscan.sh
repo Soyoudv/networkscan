@@ -25,7 +25,6 @@ ping_ip(){
     fi
 
     if ping -c 2 -W 0.6 $ip >/dev/null 2>&1; then
-        echo "write to state: $ip $macOfThisIp"
         (echo "$ip $macOfThisIp") >> "$STATE_FILE"
     fi
 }
@@ -41,6 +40,7 @@ scan_network(){
 
     wait
     cat "$STATE_FILE"
+
 }
 
 scan_network
