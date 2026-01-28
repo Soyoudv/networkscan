@@ -44,18 +44,28 @@ scan_network(){
     while read -r line; do
         ip=$(echo $line | cut -d' ' -f1)
         mac=$(echo $line | cut -d' ' -f2)
+        if [ "$mac" != "0" ] && [ "$mac" != "1" ]; then # appel de l'api uniquement quand on a une mac valide
+            vendor=$(curl -s "https://api.macvendors.com/$mac") # appel de l'api récupere le vendeur
+            # echo "vendor for $mac is $vendor" # log
+            if [ "$vendor" != "" ]; then
+                ip_vendor_map[$ip]=$vendor # assignation au tableau associatif
+            else
+                ip_vendor_map[$ip]="Unknown Vendor"
+            fi
+        fi
         ip_mac_map[$ip]=$mac
+        sleep 0.6 # to avoid being rate limited by macvendors API
     done < "$STATE_FILE"
 
     # affichage:
     for ip in "${!ip_mac_map[@]}"; do
         mac=${ip_mac_map[$ip]}
         if [ "$mac" = 1 ]; then
-            echo "$ip : your device"
+            echo "$ip    your device"
         else if [ "$mac" = 0 ]; then
-            echo "$ip : no MAC found"
+            echo "$ip    no MAC found"
         else
-            echo "$ip : $mac (${ip_vendor_map[$ip]})"
+            echo "$ip    $mac    ${ip_vendor_map[$ip]}"
         fi fi
     done
 }
