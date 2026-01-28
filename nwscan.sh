@@ -47,7 +47,7 @@ scan_network(){
         if [ "$mac" != "0" ] && [ "$mac" != "1" ]; then # appel de l'api uniquement quand on a une mac valide
             vendor=$(curl -s "https://api.macvendors.com/$mac") # appel de l'api récupere le vendeur
             # echo "vendor for $mac is $vendor" # log
-            if [ "$vendor" != "" ]; then
+            if [ "$vendor" != "{\"errors\":{\"detail\":\"Not Found\"}}" ]; then
                 ip_vendor_map[$ip]=$vendor # assignation au tableau associatif
             else
                 ip_vendor_map[$ip]="Unknown Vendor"
