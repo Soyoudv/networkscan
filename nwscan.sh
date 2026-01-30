@@ -68,6 +68,7 @@ scan_network(){
             echo "$ip    $mac    ${ip_vendor_map[$ip]}"
         fi fi
     done
+    echo "nombre d'éléments trouvés: ${#ip_mac_map[@]}"
 }
 
 scan_network
