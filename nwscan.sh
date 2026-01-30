@@ -74,7 +74,11 @@ main(){ # fonction principale scan le network
         else if [ "$mac" = 0 ]; then
             echo -e "$ip\tno MAC found"
         else
-            echo -e "$ip\t$mac\t${ip_vendor_map[$ip]}"
+            if [ "${ip_vendor_map[$ip]}" ]; then
+                echo -e "$ip\t$mac\t${ip_vendor_map[$ip]}"
+            else
+                echo -e "$ip\t$mac\tUnknown Vendor"
+            fi
         fi fi
     done
     echo "nombre d'éléments trouvés: ${#ip_mac_map[@]}"
