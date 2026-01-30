@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+# echo "Running nwscan from dir ${DIR}"
+
 base="192.168."
 
 myIp=$(ip route get 192.168.0.1 | grep -oP '(?<=src )[\d.]+')
@@ -29,7 +32,7 @@ ping_ip(){
     fi
 }
 
-scan_network(){
+main(){ # fonction principale scan le network
 
     for i in $(seq 0 1); do
         for j in $(seq 0 255); do
@@ -45,8 +48,14 @@ scan_network(){
         ip=$(echo $line | cut -d' ' -f1)
         mac=$(echo $line | cut -d' ' -f2)
         if [ "$mac" != "0" ] && [ "$mac" != "1" ]; then # appel de l'api uniquement quand on a une mac valide
-            vendor=$(curl -s "https://api.macvendors.com/$mac") # appel de l'api récupere le vendeur
-            # echo "vendor for $mac is $vendor" # log
+            mac_part=${mac//:/}}
+            mac_part=${mac_part:0:6}
+            mac_part=${mac_part^^} # uppercase
+            # echo "searching vendor for $mac_part in $DIR/ieee-oui.txt"
+
+            vendor=$(cat "$DIR/ieee-oui.txt" | grep "$mac_part" | head -n 1 | awk -F'\t' '{ print $2 }') # lookup in local OUI file, take the full vendor $2 and more
+            # echo "vendor for $mac is $vendor"
+
             if [ "$vendor" != "{\"errors\":{\"detail\":\"Not Found\"}}" ]; then
                 ip_vendor_map[$ip]=$vendor # assignation au tableau associatif
             else
@@ -70,5 +79,4 @@ scan_network(){
     done
     echo "nombre d'éléments trouvés: ${#ip_mac_map[@]}"
 }
-
-scan_network
+main "$@"
