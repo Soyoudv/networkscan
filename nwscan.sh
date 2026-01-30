@@ -70,11 +70,11 @@ main(){ # fonction principale scan le network
     for ip in "${!ip_mac_map[@]}"; do
         mac=${ip_mac_map[$ip]}
         if [ "$mac" = 1 ]; then
-            echo "$ip    your device"
+            echo -e "$ip\tyour device"
         else if [ "$mac" = 0 ]; then
-            echo "$ip    no MAC found"
+            echo -e "$ip\tno MAC found"
         else
-            echo "$ip    $mac    ${ip_vendor_map[$ip]}"
+            echo -e "$ip\t$mac\t${ip_vendor_map[$ip]}"
         fi fi
     done
     echo "nombre d'éléments trouvés: ${#ip_mac_map[@]}"
